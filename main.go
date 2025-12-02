@@ -26,21 +26,39 @@ func main() {
 			panic(-1)
 		}
 
-		if clicks > 100 {
-			clicks = clicks % 100
-		}
-
 		switch direction {
 		case "R":
-			dialPoint = (dialPoint + clicks) % 100
+			if dialPoint == 0 {
+				dialPoint++
+				clicks--
+			}
+			for range clicks {
+				dialPoint++
+				if dialPoint == 100 {
+					dialPoint = 0
+					zeroCounter++
+				}
+			}
 		case "L":
-			dialPoint = (dialPoint - clicks) % 100
+			if dialPoint == 0 {
+				dialPoint = 99
+				clicks--
+			}
+
+			wrap := false
+			for range clicks {
+				if wrap {
+					dialPoint = 100
+					wrap = false
+				}
+				dialPoint--
+				if dialPoint == 0 {
+					wrap = true
+					zeroCounter++
+				}
+			}
 		default:
 			panic(-1)
-		}
-
-		if dialPoint == 0 {
-			zeroCounter++
 		}
 	}
 
