@@ -9,58 +9,30 @@ import (
 
 func main() {
 
-	dialPoint := 50
-	zeroCounter := 0
+	idsSum := 0
 
 	data, _ := os.ReadFile("data.txt")
-	lines := strings.SplitSeq(string(data), "\n")
+	scopes := strings.SplitSeq(string(data), ",")
 
-	for line := range lines {
-		if line == "" {
-			continue
-		}
+	for scope := range scopes {
+		start, _ := strconv.Atoi(strings.Split(scope, "-")[0])
+		end, _ := strconv.Atoi(strings.Split(scope, "-")[1])
 
-		direction := line[:1]
-		clicks, err := strconv.Atoi(line[1:])
-		if err != nil {
-			panic(-1)
-		}
-
-		switch direction {
-		case "R":
-			if dialPoint == 0 {
-				dialPoint++
-				clicks--
-			}
-			for range clicks {
-				dialPoint++
-				if dialPoint == 100 {
-					dialPoint = 0
-					zeroCounter++
-				}
-			}
-		case "L":
-			if dialPoint == 0 {
-				dialPoint = 99
-				clicks--
+		for id := start; id <= end; id++ {
+			magnitude := len(strconv.Itoa(id))
+			if magnitude%2 != 0 {
+				continue
 			}
 
-			wrap := false
-			for range clicks {
-				if wrap {
-					dialPoint = 100
-					wrap = false
-				}
-				dialPoint--
-				if dialPoint == 0 {
-					wrap = true
-					zeroCounter++
-				}
+			midway := magnitude / 2
+			firstHalf := strconv.Itoa(id)[:midway]
+			secondHalf := strconv.Itoa(id)[midway:]
+
+			if firstHalf == secondHalf {
+				idsSum += id
 			}
-		default:
-			panic(-1)
 		}
 	}
 
-	fmt.Println(zeroCounter)
+	fmt.Println(idsSum)
 }
