@@ -9,69 +9,48 @@ import (
 
 func main() {
 
-	idsSum := 0
+	total := 0
 
 	data, _ := os.ReadFile("data.txt")
-	scopes := strings.SplitSeq(string(data), ",")
+	banks := strings.SplitSeq(string(data), "\n")
 
-	for scope := range scopes {
-		start, _ := strconv.Atoi(strings.Split(scope, "-")[0])
-		end, _ := strconv.Atoi(strings.Split(scope, "-")[1])
+	for bank := range banks {
 
-		for id := start; id <= end; id++ {
+		firstBattery := 0
+		firstBatteryIndex := 0
+		for i := len(bank) - 1; i >= 0; i-- {
+			digit, _ := strconv.Atoi(string(bank[i]))
 
-			idString := strconv.Itoa(id)
-			idStringLength := len(idString)
-
-			if idStringLength < 2 {
-				continue
-			}
-
-			singleDigit := true
-			for i := 1; i < idStringLength; i++ {
-
-				if idString[0] != idString[i] {
-					singleDigit = false
-					break
-				}
-			}
-			if singleDigit {
-				idsSum += id
-				continue
-			}
-
-			if idStringLength < 4 {
-				continue
-			}
-
-			repeating := false
-			for j := 2; j < idStringLength; j++ {
-				segment := idString[:j]
-
-				segmentLength := len(segment)
-
-				if idStringLength%segmentLength != 0 {
-					continue
-				}
-
-				var nextSegment string
-				repeating = true
-				for k := segmentLength; k < idStringLength; k += segmentLength {
-					nextSegment = idString[k : k+segmentLength]
-
-					if segment != nextSegment {
-						repeating = false
-						break
-					}
-				}
-				if repeating {
-					break
-				}
-			}
-			if repeating {
-				idsSum += id
+			if digit >= firstBattery {
+				firstBattery = digit
+				firstBatteryIndex = i
 			}
 		}
+
+		secondBattery := 0
+		for j := len(bank) - 1; j > firstBatteryIndex; j-- {
+			digit, _ := strconv.Atoi(string(bank[j]))
+
+			if digit >= secondBattery {
+				secondBattery = digit
+			}
+		}
+
+		if secondBattery == 0 {
+			secondBattery = firstBattery
+			firstBattery = 0
+
+			for k := 0; k < firstBatteryIndex; k++ {
+				digit, _ := strconv.Atoi(string(bank[k]))
+
+				if digit >= firstBattery {
+					firstBattery = digit
+				}
+			}
+		}
+
+		total += firstBattery*10 + secondBattery
 	}
-	fmt.Println(idsSum)
+
+	fmt.Println(total)
 }
