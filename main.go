@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -16,41 +17,43 @@ func main() {
 
 	for bank := range banks {
 
-		firstBattery := 0
-		firstBatteryIndex := 0
-		for i := len(bank) - 1; i >= 0; i-- {
-			digit, _ := strconv.Atoi(string(bank[i]))
+		slotsToFill := 12
+		battery := 0
+		index := 0
+		maxIndex := 0
+		maxDigit := 10
 
-			if digit >= firstBattery {
-				firstBattery = digit
-				firstBatteryIndex = i
-			}
-		}
+		for {
 
-		secondBattery := 0
-		for j := len(bank) - 1; j > firstBatteryIndex; j-- {
-			digit, _ := strconv.Atoi(string(bank[j]))
+			battery = 0
+			for i := len(bank) - 1; i >= maxIndex; i-- {
+				digit, _ := strconv.Atoi(string(bank[i]))
 
-			if digit >= secondBattery {
-				secondBattery = digit
-			}
-		}
+				if digit >= maxDigit {
+					continue
+				}
 
-		if secondBattery == 0 {
-			secondBattery = firstBattery
-			firstBattery = 0
-
-			for k := 0; k < firstBatteryIndex; k++ {
-				digit, _ := strconv.Atoi(string(bank[k]))
-
-				if digit >= firstBattery {
-					firstBattery = digit
+				if digit >= battery {
+					battery = digit
+					index = i
 				}
 			}
+
+			if slotsToFill > (len(bank) - index) {
+				maxDigit = battery
+				continue
+			}
+
+			slotsToFill--
+			maxIndex = index + 1
+			maxDigit = 10
+
+			total += (battery * int(math.Pow(float64(10), float64(slotsToFill))))
+
+			if slotsToFill == 0 {
+				break
+			}
 		}
-
-		total += firstBattery*10 + secondBattery
 	}
-
 	fmt.Println(total)
 }
