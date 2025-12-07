@@ -2,58 +2,85 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
-	"strconv"
 	"strings"
 )
 
 func main() {
 
-	total := 0
+	rolls := 0
 
 	data, _ := os.ReadFile("data.txt")
-	banks := strings.SplitSeq(string(data), "\n")
+	lines := strings.SplitSeq(string(data), "\n")
 
-	for bank := range banks {
+	grid := [][]byte{}
+	for line := range lines {
+		grid = append(grid, []byte(line))
+	}
 
-		slotsToFill := 12
-		battery := 0
-		index := 0
-		maxIndex := 0
-		maxDigit := 10
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[i]); j++ {
+			adjacent := 0
+			char := grid[i][j]
 
-		for {
-
-			battery = 0
-			for i := len(bank) - 1; i >= maxIndex; i-- {
-				digit, _ := strconv.Atoi(string(bank[i]))
-
-				if digit >= maxDigit {
-					continue
-				}
-
-				if digit >= battery {
-					battery = digit
-					index = i
-				}
-			}
-
-			if slotsToFill > (len(bank) - index) {
-				maxDigit = battery
+			if char == '.' {
 				continue
 			}
 
-			slotsToFill--
-			maxIndex = index + 1
-			maxDigit = 10
+			firstline := i == 0
+			lastline := i == len(grid)-1
 
-			total += (battery * int(math.Pow(float64(10), float64(slotsToFill))))
+			firstrow := j == 0
+			lastrow := j == len(grid[i])-1
 
-			if slotsToFill == 0 {
-				break
+			if !firstline {
+				if !firstrow {
+					if grid[i-1][j-1] == '@' {
+						adjacent++
+					}
+				}
+				if grid[i-1][j] == '@' {
+					adjacent++
+				}
+				if !lastrow {
+					if grid[i-1][j+1] == '@' {
+						adjacent++
+					}
+				}
+			}
+
+			if !firstrow {
+				if grid[i][j-1] == '@' {
+					adjacent++
+				}
+			}
+			if !lastrow {
+				if grid[i][j+1] == '@' {
+					adjacent++
+				}
+			}
+
+			if !lastline {
+				if !firstrow {
+					if grid[i+1][j-1] == '@' {
+						adjacent++
+					}
+				}
+				if grid[i+1][j] == '@' {
+					adjacent++
+				}
+				if !lastrow {
+					if grid[i+1][j+1] == '@' {
+						adjacent++
+					}
+				}
+			}
+
+			if adjacent < 4 {
+				rolls++
 			}
 		}
 	}
-	fmt.Println(total)
+
+	fmt.Println(rolls)
 }
