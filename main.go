@@ -18,68 +18,87 @@ func main() {
 		grid = append(grid, []byte(line))
 	}
 
-	for i := 0; i < len(grid); i++ {
-		for j := 0; j < len(grid[i]); j++ {
-			adjacent := 0
-			char := grid[i][j]
+	for {
 
-			if char == '.' {
-				continue
-			}
+		additional := 0
+		for i := 0; i < len(grid); i++ {
+			for j := 0; j < len(grid[i]); j++ {
+				adjacent := 0
+				char := grid[i][j]
 
-			firstline := i == 0
-			lastline := i == len(grid)-1
+				if char == '.' {
+					continue
+				}
 
-			firstrow := j == 0
-			lastrow := j == len(grid[i])-1
+				firstline := i == 0
+				lastline := i == len(grid)-1
 
-			if !firstline {
-				if !firstrow {
-					if grid[i-1][j-1] == '@' {
+				firstrow := j == 0
+				lastrow := j == len(grid[i])-1
+
+				if !firstline {
+					if !firstrow {
+						if grid[i-1][j-1] != '.' {
+							adjacent++
+						}
+					}
+					if grid[i-1][j] != '.' {
 						adjacent++
 					}
+					if !lastrow {
+						if grid[i-1][j+1] != '.' {
+							adjacent++
+						}
+					}
 				}
-				if grid[i-1][j] == '@' {
-					adjacent++
+
+				if !firstrow {
+					if grid[i][j-1] != '.' {
+						adjacent++
+					}
 				}
 				if !lastrow {
-					if grid[i-1][j+1] == '@' {
+					if grid[i][j+1] != '.' {
 						adjacent++
 					}
 				}
-			}
 
-			if !firstrow {
-				if grid[i][j-1] == '@' {
-					adjacent++
-				}
-			}
-			if !lastrow {
-				if grid[i][j+1] == '@' {
-					adjacent++
-				}
-			}
-
-			if !lastline {
-				if !firstrow {
-					if grid[i+1][j-1] == '@' {
+				if !lastline {
+					if !firstrow {
+						if grid[i+1][j-1] != '.' {
+							adjacent++
+						}
+					}
+					if grid[i+1][j] != '.' {
 						adjacent++
 					}
-				}
-				if grid[i+1][j] == '@' {
-					adjacent++
-				}
-				if !lastrow {
-					if grid[i+1][j+1] == '@' {
-						adjacent++
+					if !lastrow {
+						if grid[i+1][j+1] != '.' {
+							adjacent++
+						}
 					}
 				}
-			}
 
-			if adjacent < 4 {
-				rolls++
+				if adjacent < 4 {
+					grid[i][j] = 'X'
+					additional++
+				}
 			}
 		}
+
+		for i := 0; i < len(grid); i++ {
+			for j := 0; j < len(grid[i]); j++ {
+				if grid[i][j] == 'X' {
+					grid[i][j] = '.'
+				}
+			}
+		}
+
+		if additional == 0 {
+			break
+		}
+
+		rolls += additional
 	}
 
 	fmt.Println(rolls)
