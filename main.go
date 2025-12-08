@@ -64,7 +64,7 @@ func main() {
 
 		if start < smallest {
 			if end < smallest {
-				vacanciesList = append(vacanciesList, [2]int{end, smallest - 1})
+				vacanciesList = append(vacanciesList, [2]int{end + 1, smallest - 1})
 			}
 			smallest = start
 		}
