@@ -12,7 +12,7 @@ func main() {
 
 	fresh := 0
 
-	data, _ := os.ReadFile("test_data.txt")
+	data, _ := os.ReadFile("data.txt")
 	full := strings.Split(string(data), "\n\n")
 	scopes := strings.Split(full[0], "\n")
 
@@ -22,9 +22,6 @@ func main() {
 	vacanciesList := [][2]int{}
 
 	for _, scope := range scopes {
-
-		fmt.Println()
-		fmt.Println(scope)
 
 		start, _ := strconv.Atoi(strings.Split(scope, "-")[0])
 		end, _ := strconv.Atoi(strings.Split(scope, "-")[1])
@@ -38,13 +35,8 @@ func main() {
 
 		for index, vacany := range vacanciesList {
 
-			fmt.Println(vacanciesList)
-
 			if start <= vacany[0] && end >= vacany[1] {
 				vacanciesList = slices.Delete(vacanciesList, index, index+1)
-				fmt.Println(vacanciesList)
-				fmt.Println()
-
 				continue
 			}
 
