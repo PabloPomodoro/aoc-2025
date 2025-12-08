@@ -3,77 +3,35 @@ package main
 import (
 	"fmt"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
 )
 
 func main() {
 
-	fresh := 0
+	sum := 0
 
 	data, _ := os.ReadFile("data.txt")
-	full := strings.Split(string(data), "\n\n")
-	scopes := strings.Split(full[0], "\n")
+	full := strings.Split(string(data), "\n")
 
-	smallest := 0
-	biggest := 0
-	vacancies := 0
-	vacanciesList := [][2]int{}
+	row := full[0]
+	width := len(strings.Fields(row))
 
-	for _, scope := range scopes {
+	for counter := range width {
+		operator := strings.Fields(full[4])[counter]
 
-		start, _ := strconv.Atoi(strings.Split(scope, "-")[0])
-		end, _ := strconv.Atoi(strings.Split(scope, "-")[1])
+		first, _ := strconv.Atoi(strings.Fields(full[0])[counter])
+		second, _ := strconv.Atoi(strings.Fields(full[1])[counter])
+		third, _ := strconv.Atoi(strings.Fields(full[2])[counter])
+		fourth, _ := strconv.Atoi(strings.Fields(full[3])[counter])
 
-		if smallest == 0 {
-			smallest = start
-		}
-		if biggest == 0 {
-			biggest = end
-		}
-
-		for index, vacany := range vacanciesList {
-
-			if start <= vacany[0] && end >= vacany[1] {
-				vacanciesList = slices.Delete(vacanciesList, index, index+1)
-				continue
-			}
-
-			if !(vacany[1] < start || vacany[0] > end) {
-				vacanciesList = slices.Delete(vacanciesList, index, index+1)
-
-				if start > vacany[0] && end < vacany[1] {
-					vacanciesList = append(vacanciesList, [2]int{vacany[0], start - 1})
-					vacanciesList = append(vacanciesList, [2]int{end + 1, vacany[1]})
-				} else if start <= vacany[0] && end < vacany[1] {
-					vacanciesList = append(vacanciesList, [2]int{end + 1, vacany[1]})
-				} else if start > vacany[0] && end > vacany[1] {
-					vacanciesList = append(vacanciesList, [2]int{vacany[0], start - 1})
-				}
-			}
-		}
-
-		if start < smallest {
-			if end < smallest {
-				vacanciesList = append(vacanciesList, [2]int{end + 1, smallest - 1})
-			}
-			smallest = start
-		}
-
-		if end > biggest {
-			if start > biggest {
-				vacanciesList = append(vacanciesList, [2]int{biggest + 1, start - 1})
-			}
-			biggest = end
+		switch operator {
+		case "+":
+			sum += first + second + third + fourth
+		case "*":
+			sum += first * second * third * fourth
 		}
 	}
 
-	for m := range vacanciesList {
-		vacancies += vacanciesList[m][1] - vacanciesList[m][0] + 1
-	}
-
-	fresh = biggest - smallest - vacancies + 1
-	fmt.Println()
-	fmt.Println(fresh)
+	fmt.Println(sum)
 }
