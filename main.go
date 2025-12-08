@@ -3,103 +3,85 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
+	"strconv"
 	"strings"
 )
 
 func main() {
 
-	rolls := 0
+	fresh := 0
 
-	data, _ := os.ReadFile("data.txt")
-	lines := strings.SplitSeq(string(data), "\n")
+	data, _ := os.ReadFile("test_data.txt")
+	full := strings.Split(string(data), "\n\n")
+	scopes := strings.Split(full[0], "\n")
 
-	grid := [][]byte{}
-	for line := range lines {
-		grid = append(grid, []byte(line))
-	}
+	smallest := 0
+	biggest := 0
+	vacancies := 0
+	vacanciesList := [][2]int{}
 
-	for {
+	for _, scope := range scopes {
 
-		additional := 0
-		for i := 0; i < len(grid); i++ {
-			for j := 0; j < len(grid[i]); j++ {
-				adjacent := 0
-				char := grid[i][j]
+		fmt.Println()
+		fmt.Println(scope)
 
-				if char == '.' {
-					continue
-				}
+		start, _ := strconv.Atoi(strings.Split(scope, "-")[0])
+		end, _ := strconv.Atoi(strings.Split(scope, "-")[1])
 
-				firstline := i == 0
-				lastline := i == len(grid)-1
+		if smallest == 0 {
+			smallest = start
+		}
+		if biggest == 0 {
+			biggest = end
+		}
 
-				firstrow := j == 0
-				lastrow := j == len(grid[i])-1
+		for index, vacany := range vacanciesList {
 
-				if !firstline {
-					if !firstrow {
-						if grid[i-1][j-1] != '.' {
-							adjacent++
-						}
-					}
-					if grid[i-1][j] != '.' {
-						adjacent++
-					}
-					if !lastrow {
-						if grid[i-1][j+1] != '.' {
-							adjacent++
-						}
-					}
-				}
+			fmt.Println(vacanciesList)
 
-				if !firstrow {
-					if grid[i][j-1] != '.' {
-						adjacent++
-					}
-				}
-				if !lastrow {
-					if grid[i][j+1] != '.' {
-						adjacent++
-					}
-				}
+			if start <= vacany[0] && end >= vacany[1] {
+				vacanciesList = slices.Delete(vacanciesList, index, index+1)
+				fmt.Println(vacanciesList)
+				fmt.Println()
 
-				if !lastline {
-					if !firstrow {
-						if grid[i+1][j-1] != '.' {
-							adjacent++
-						}
-					}
-					if grid[i+1][j] != '.' {
-						adjacent++
-					}
-					if !lastrow {
-						if grid[i+1][j+1] != '.' {
-							adjacent++
-						}
-					}
-				}
+				continue
+			}
 
-				if adjacent < 4 {
-					grid[i][j] = 'X'
-					additional++
+			if !(vacany[1] < start || vacany[0] > end) {
+				vacanciesList = slices.Delete(vacanciesList, index, index+1)
+
+				if start > vacany[0] && end < vacany[1] {
+					vacanciesList = append(vacanciesList, [2]int{vacany[0], start - 1})
+					vacanciesList = append(vacanciesList, [2]int{end + 1, vacany[1]})
+				} else if start <= vacany[0] && end < vacany[1] {
+					vacanciesList = append(vacanciesList, [2]int{end + 1, vacany[1]})
+				} else if start > vacany[0] && end > vacany[1] {
+					vacanciesList = append(vacanciesList, [2]int{vacany[0], start - 1})
 				}
 			}
 		}
 
-		for i := 0; i < len(grid); i++ {
-			for j := 0; j < len(grid[i]); j++ {
-				if grid[i][j] == 'X' {
-					grid[i][j] = '.'
-				}
+		if start < smallest {
+			if end < smallest {
+				vacanciesList = append(vacanciesList, [2]int{end, smallest - 1})
 			}
+			smallest = start
 		}
 
-		if additional == 0 {
-			break
+		if end > biggest {
+			if start > biggest {
+				vacanciesList = append(vacanciesList, [2]int{biggest + 1, start - 1})
+			}
+			biggest = end
 		}
-
-		rolls += additional
 	}
 
-	fmt.Println(rolls)
+	for m := range vacanciesList {
+		vacancies += vacanciesList[m][1] - vacanciesList[m][0] + 1
+	}
+
+	fresh = biggest - smallest - vacancies + 1
+	fmt.Println()
+	fmt.Println(fresh)
 }
