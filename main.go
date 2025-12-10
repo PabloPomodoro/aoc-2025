@@ -11,57 +11,63 @@ func main() {
 
 	total := 0
 
-	data, _ := os.ReadFile("test_data.txt")
+	data, _ := os.ReadFile("data.txt")
 	full := strings.Split(string(data), "\n")
 
-	row := full[0]
-	width := len(strings.Fields(row))
-
-	for counter := width - 1; counter >= 0; counter-- {
-
-		firstString := strings.Fields(full[0])[counter]
-		secondString := strings.Fields(full[1])[counter]
-		thirdString := strings.Fields(full[2])[counter]
-
-		max := len(firstString)
-		if len(secondString) > max {
-			max = len(secondString)
-		}
-		if len(thirdString) > max {
-			max = len(thirdString)
+	lastRow := full[len(full)-1]
+	for index, operator := range lastRow {
+		if operator == ' ' {
+			continue
 		}
 
-		var sum int
-		for k := max - 1; k >= 0; k-- {
-
-			thirdDigit := 0
-			secondDigit := 0
-			firstDigit := 0
-
-			if k < len(firstString) {
-				firstDigit, _ = strconv.Atoi(strings.Split(firstString, "")[k])
+		firstDigitIndex := 0
+		last := true
+		for next := index + 1; next < len(lastRow); next++ {
+			last = true
+			if lastRow[next] != ' ' {
+				firstDigitIndex = next - 2
+				last = false
+				break
 			}
-			if k < len(secondString) {
-				secondDigit, _ = strconv.Atoi(strings.Split(secondString, "")[k])
-			}
-			if k < len(thirdString) {
-				thirdDigit, _ = strconv.Atoi(strings.Split(thirdString, "")[k])
-			}
+		}
 
-			number := 100*firstDigit + 10*secondDigit + thirdDigit
+		if last {
+			width := 0
+			for _, line := range full {
+				if len(line) > width {
+					width = len(line)
+				}
+			}
+			firstDigitIndex = width - 1
+		}
 
+		sum := 0
+		for corrective := 0; corrective < len(full)-1; corrective++ {
+			builder := []rune{}
+			for i, line := range full {
+				if i == len(full)-1 {
+					break
+				}
+				digit, _ := strconv.Atoi(string(line[firstDigitIndex-corrective]))
+				if digit != 0 {
+					builder = append(builder, rune('0'+digit))
+				}
+			}
+			number, _ := strconv.Atoi(string(builder))
 			fmt.Println(number)
 
-			operator := strings.Fields(full[3])[counter]
 			switch operator {
-			case "+":
-				sum = 0
+			case '+':
 				sum += number
-			case "*":
-				sum = 1
+			case '*':
+				if sum == 0 {
+					sum = 1
+				}
 				sum *= number
 			}
 		}
+		fmt.Println(sum)
+		fmt.Println()
 
 		total += sum
 	}
