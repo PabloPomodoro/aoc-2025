@@ -58,6 +58,10 @@ func main() {
 			number, _ := strconv.Atoi(string(builder))
 			fmt.Println(number)
 
+			if number == 0 {
+				break
+			}
+
 			switch operator {
 			case '+':
 				sum += number
@@ -68,7 +72,6 @@ func main() {
 				sum *= number
 			}
 		}
-		fmt.Println(sum)
 		fmt.Println()
 
 		total += sum
