@@ -48,9 +48,11 @@ func main() {
 				if i == len(full)-1 {
 					break
 				}
-				digit, _ := strconv.Atoi(string(line[firstDigitIndex-corrective]))
-				if digit != 0 {
-					builder = append(builder, rune('0'+digit))
+				if (firstDigitIndex - corrective) > -1 {
+					digit, _ := strconv.Atoi(string(line[firstDigitIndex-corrective]))
+					if digit != 0 {
+						builder = append(builder, rune('0'+digit))
+					}
 				}
 			}
 			number, _ := strconv.Atoi(string(builder))
